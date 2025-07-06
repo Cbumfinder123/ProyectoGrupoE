@@ -1,0 +1,38 @@
+<div th:fragment="navbar">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container-fluid">
+      <!-- Logo -->
+      <a class="navbar-brand" th:href="@{/home}">🦎 ReptilGaming</a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarNav" aria-controls="navbarNav"
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <!-- Navegación principal -->
+          <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/productos/listado}">Productos</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/ventas/listado}">Ventas</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/reportes/listado}">Reportes</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/bot}">ReptilGPT</a></li>
+
+          <!-- Usuario visible + botón cerrar sesión -->
+          <li class="nav-item d-flex align-items-center mx-2 text-white" th:if="${session.cuenta != null}">
+            <i class="fas fa-user-circle fa-lg me-1"></i>
+            <span class="me-3 fw-semibold" th:text="${session.cuenta}">usuario</span>
+          </li>
+
+          <li class="nav-item" th:if="${session.cuenta != null}">
+            <a class="nav-link btn btn-outline-danger text-white py-1 px-3" 
+               th:href="@{/cerrar-sesion}" style="margin-top: 3px;">
+              <i class="fas fa-sign-out-alt me-1"></i> Salir
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</div>

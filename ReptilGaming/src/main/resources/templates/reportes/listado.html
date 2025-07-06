@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reportes de Actividad</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .header-gradient {
+            background: linear-gradient(135deg, #1a237e, #283593);
+        }
+        .search-container {
+            background: linear-gradient(to right, #e3f2fd, #bbdefb);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .badge-producto {
+            background-color: #4caf50;
+        }
+        .badge-venta {
+            background-color: #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/fragments :: navbar}"></div>
+
+    <div class="container mt-4 mb-5">
+        <div class="card shadow-lg">
+            <div class="card-header text-white header-gradient">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2 class="m-0"><i class="fas fa-file-alt me-2"></i>Reportes de Actividad</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body">
+              
+                <div class="search-container">
+                    <form th:action="@{/reportes/listado}" method="get">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Tipo</label>
+                                <select name="tipo" class="form-select">
+                                    <option value="">Todos</option>
+                                    <option value="PRODUCTO" th:selected="${tipo == 'PRODUCTO'}">Producto</option>
+                                    <option value="VENTA" th:selected="${tipo == 'VENTA'}">Venta</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Fecha</label>
+                                <input type="date" name="fecha" class="form-control" th:value="${fecha}">
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-search me-1"></i> Filtrar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Acción</th>
+                                <th>Detalle</th>
+                                <th>Código</th>
+                                <th>Nombre del Usuario</th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="r : ${reportes}">
+                                <td th:text="${#temporals.format(r.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td>
+                                    <span th:if="${r.tipo == 'PRODUCTO'}" class="badge badge-producto">PRODUCTO</span>
+                                    <span th:if="${r.tipo == 'VENTA'}" class="badge badge-venta">VENTA</span>
+                                </td>
+                                <td th:text="${r.accion}"></td>
+                                <td th:text="${r.detalle}"></td>
+                                <td><span th:text="${r.codigoEntidad} ?: '-'"></span></td>
+                                <td th:text="${r.usuario != null ? r.usuario : 'Sistema'}"></td> 
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

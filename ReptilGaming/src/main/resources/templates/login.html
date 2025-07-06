@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>ReptilG - Login</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: 
+        radial-gradient(ellipse at top, #0a0a23 0%, #000000 70%),
+        linear-gradient(135deg, #000000 0%, #0d1b2a 25%, #1b263b 50%, #000000 75%, #0a0a23 100%);
+    font-family: 'JetBrains Mono', monospace;
+    color: #fcee0c;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(90deg, transparent 98%, rgba(252, 238, 12, 0.05) 100%),
+        linear-gradient(0deg, transparent 98%, rgba(252, 238, 12, 0.05) 100%);
+    background-size: 80px 80px;
+    animation: gridMove 30s linear infinite;
+    z-index: -2;
+}
+
+@keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(80px, 80px); }
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 15% 30%, rgba(252, 238, 12, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 70%, rgba(3, 216, 243, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 50% 20%, rgba(255, 17, 17, 0.04) 0%, transparent 50%);
+    animation: ambientPulse 20s ease-in-out infinite alternate;
+    z-index: -1;
+}
+
+@keyframes ambientPulse {
+    0% { opacity: 0.4; }
+    100% { opacity: 0.8; }
+}
+
+.scan-line {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(252, 238, 12, 0.8), transparent);
+    animation: scanMove 8s linear infinite;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+@keyframes scanMove {
+    0% { top: -1px; opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { top: 100vh; opacity: 0; }
+}
+
+.gaming-title {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 3rem;
+    color: #fcee0c;
+    text-shadow: 
+        0 0 20px rgba(252, 238, 12, 0.8),
+        0 0 40px rgba(252, 238, 12, 0.6),
+        0 0 60px rgba(252, 238, 12, 0.4);
+    position: relative;
+    margin-bottom: 2rem;
+    animation: titleGlow 3s ease-in-out infinite alternate;
+    text-align: center;
+}
+
+@keyframes titleGlow {
+    0% { text-shadow: 0 0 20px rgba(252, 238, 12, 0.8), 0 0 40px rgba(252, 238, 12, 0.6); }
+    100% { text-shadow: 0 0 30px rgba(252, 238, 12, 1), 0 0 60px rgba(252, 238, 12, 0.8); }
+}
+
+.gaming-card {
+    background: 
+        linear-gradient(135deg, rgba(13, 27, 42, 0.95) 0%, rgba(0, 0, 0, 0.95) 100%),
+        radial-gradient(circle at 50% 50%, rgba(252, 238, 12, 0.05) 0%, transparent 70%);
+    border: 2px solid #fcee0c;
+    border-radius: 15px;
+    position: relative;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 0 40px rgba(252, 238, 12, 0.3),
+        inset 0 0 40px rgba(252, 238, 12, 0.05);
+    animation: cardBreath 6s ease-in-out infinite;
+    overflow: hidden;
+}
+
+.gaming-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #fcee0c, #03d8f3, #fcee0c);
+    background-size: 200% 200%;
+    border-radius: 15px;
+    z-index: -1;
+    animation: borderFlow 4s linear infinite;
+    opacity: 0.8;
+}
+
+@keyframes cardBreath {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(252, 238, 12, 0.3); }
+    50% { transform: scale(1.005); box-shadow: 0 0 50px rgba(252, 238, 12, 0.4); }
+}
+
+@keyframes borderFlow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.gaming-card-header {
+    background: linear-gradient(135deg, rgba(252, 238, 12, 0.9), rgba(3, 216, 243, 0.9));
+    color: #000;
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 15px 15px 0 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.gaming-card-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.gaming-card-header h4 {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 1;
+}
+
+.gaming-card-header .gaming-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    animation: iconFloat 3s ease-in-out infinite alternate;
+}
+
+@keyframes iconFloat {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-3px); }
+}
+
+.gaming-card-body {
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.gaming-form-label {
+    color: #fcee0c;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 10px rgba(252, 238, 12, 0.5);
+}
+
+.gaming-form-control {
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid rgba(3, 216, 243, 0.5);
+    border-radius: 8px;
+    color: #fcee0c;
+    padding: 0.75rem 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 0 10px rgba(3, 216, 243, 0.1);
+}
+
+.gaming-form-control:focus {
+    background: rgba(0, 0, 0, 0.9);
+    border-color: #fcee0c;
+    box-shadow: 
+        0 0 20px rgba(252, 238, 12, 0.5),
+        inset 0 0 20px rgba(252, 238, 12, 0.1);
+    color: #fcee0c;
+    outline: none;
+}
+
+.gaming-form-control::placeholder {
+    color: rgba(252, 238, 12, 0.5);
+    font-style: italic;
+}
+
+.gaming-btn {
+    background: linear-gradient(135deg, #fcee0c, #03d8f3);
+    border: none;
+    border-radius: 8px;
+    color: #000;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 0.75rem 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(252, 238, 12, 0.4);
+}
+
+.gaming-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.gaming-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(252, 238, 12, 0.6);
+    background: linear-gradient(135deg, #03d8f3, #fcee0c);
+}
+
+.gaming-btn:hover::before {
+    left: 100%;
+}
+
+.gaming-btn:active {
+    transform: translateY(0);
+}
+
+.gaming-card-footer {
+    background: rgba(0, 0, 0, 0.5);
+    text-align: center;
+    padding: 1rem;
+    border-radius: 0 0 15px 15px;
+    color: #fcee0c;
+    font-size: 0.9rem;
+    border-top: 1px solid rgba(252, 238, 12, 0.3);
+}
+
+.gaming-card-footer a {
+    color: #03d8f3;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.gaming-card-footer a:hover {
+    color: #fcee0c;
+    text-shadow: 0 0 10px rgba(252, 238, 12, 0.8);
+}
+
+.cyber-divider {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #fcee0c, #03d8f3, #fcee0c, transparent);
+    margin: 1rem 0;
+    animation: dividerGlow 4s ease-in-out infinite alternate;
+    opacity: 0.7;
+}
+
+@keyframes dividerGlow {
+    0% { box-shadow: 0 0 5px rgba(252, 238, 12, 0.5); }
+    100% { box-shadow: 0 0 15px rgba(3, 216, 243, 0.8); }
+}
+
+@media (max-width: 768px) {
+    .gaming-title {
+        font-size: 2rem;
+    }
+    
+    .gaming-card {
+        margin: 1rem;
+    }
+    
+    .gaming-card-body {
+        padding: 1.5rem;
+    }
+}
+
+.glitch-effect {
+    position: relative;
+    display: inline-block;
+}
+
+.glitch-effect::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: rgba(255, 0, 0, 0.7);
+    z-index: -1;
+    animation: glitch1 2s infinite;
+}
+
+@keyframes glitch1 {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-1px, 1px); }
+    40% { transform: translate(-1px, -1px); }
+    60% { transform: translate(1px, 1px); }
+    80% { transform: translate(1px, -1px); }
+}
+</style>
+</head>
+<body>
+<div class="scan-line"></div>
+
+<div class="container mt-5">
+    <div class="gaming-title">
+        ReptilGaming 🦎🎮
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="gaming-card">
+                <div class="gaming-card-header">
+                    <div class="gaming-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h4 class="glitch-effect" data-text="Acceso al Sistema">Acceso al Sistema</h4>
+                </div>
+
+                <div class="gaming-card-body">
+                    <form th:action="@{/iniciar-sesion}" method="post" th:object="${filter}">
+                        <div class="mb-3">
+                            <label class="gaming-form-label">
+                                <i class="fas fa-user"></i> Usuario
+                            </label>
+                            <input type="text" th:field="*{usuario}" class="form-control gaming-form-control" placeholder="Ingrese su cuenta de jugador" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="gaming-form-label">
+                                <i class="fas fa-lock"></i> Contraseña
+                            </label>
+                            <input type="password" th:field="*{password}" class="form-control gaming-form-control" placeholder="Código de acceso secreto" required>
+                        </div>
+
+                        <hr class="cyber-divider">
+
+                        <div class="d-grid">
+                            <button class="btn gaming-btn" type="submit">
+                                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="gaming-card-footer">
+                    ¿No tienes cuenta? <a th:href="@{/registro}">Crear perfil de jugador</a>
+                    <hr class="cyber-divider">
+                    <small>&copy; 2025 ReptilGaming - Sistema de Autenticación</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:utext="${alert}"></th:block>
+
+<script>
+	
+window.addEventListener('load', function() {
+    const glitchElements = document.querySelectorAll('.glitch-effect');
+    
+    glitchElements.forEach(element => {
+        setTimeout(() => {
+            element.style.animation = 'none';
+            setTimeout(() => {
+                element.style.animation = '';
+            }, 100);
+        }, 2000);
+    });
+});
+
+
+setInterval(() => {
+    if (Math.random() < 0.03) {
+        document.body.style.filter = 'contrast(' + (1 + Math.random() * 0.05) + ')';
+        setTimeout(() => {
+            document.body.style.filter = 'none';
+        }, 100);
+    }
+}, 10000);
+
+
+document.querySelectorAll('.gaming-form-control').forEach(input => {
+    input.addEventListener('focus', function() {
+        this.parentElement.style.animation = 'none';
+        setTimeout(() => {
+            this.parentElement.style.animation = '';
+        }, 100);
+    });
+});
+</script>
+</body>
+</html>

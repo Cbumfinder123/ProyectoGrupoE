@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Inicio - ReptilGaming</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: 
+        radial-gradient(ellipse at top, #0a0a23 0%, #000000 70%),
+        linear-gradient(135deg, #000000 0%, #0d1b2a 25%, #1b263b 50%, #000000 75%, #0a0a23 100%);
+    font-family: 'JetBrains Mono', monospace;
+    color: #fcee0c;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(90deg, transparent 98%, rgba(252, 238, 12, 0.05) 100%),
+        linear-gradient(0deg, transparent 98%, rgba(252, 238, 12, 0.05) 100%);
+    background-size: 80px 80px;
+    animation: gridMove 30s linear infinite;
+    z-index: -2;
+}
+
+@keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(80px, 80px); }
+}
+
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 15% 30%, rgba(252, 238, 12, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 70%, rgba(3, 216, 243, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 50% 20%, rgba(255, 17, 17, 0.04) 0%, transparent 50%);
+    animation: ambientPulse 20s ease-in-out infinite alternate;
+    z-index: -1;
+}
+
+@keyframes ambientPulse {
+    0% { opacity: 0.4; }
+    100% { opacity: 0.8; }
+}
+
+.container {
+    position: relative;
+    z-index: 10;
+}
+
+
+.gaming-title {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 4rem;
+    color: #fcee0c;
+    text-shadow: 
+        0 0 20px rgba(252, 238, 12, 0.8),
+        0 0 40px rgba(252, 238, 12, 0.6),
+        0 0 60px rgba(252, 238, 12, 0.4);
+    position: relative;
+    margin-bottom: 1rem;
+    animation: titleGlow 3s ease-in-out infinite alternate;
+    text-align: center;
+}
+
+.gaming-title::before {
+    content: 'ReptilGaming';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    color: rgba(3, 216, 243, 0.3);
+    transform: translate(2px, 2px);
+    z-index: -1;
+    animation: glitchShift 4s infinite;
+}
+
+@keyframes titleGlow {
+    0% { text-shadow: 0 0 20px rgba(252, 238, 12, 0.8), 0 0 40px rgba(252, 238, 12, 0.6); }
+    100% { text-shadow: 0 0 30px rgba(252, 238, 12, 1), 0 0 60px rgba(252, 238, 12, 0.8); }
+}
+
+@keyframes glitchShift {
+    0%, 90%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-2px, 2px); }
+    20% { transform: translate(2px, -2px); }
+}
+
+
+.welcome-container {
+    background: 
+        linear-gradient(135deg, rgba(13, 27, 42, 0.95) 0%, rgba(0, 0, 0, 0.95) 100%),
+        radial-gradient(circle at 50% 50%, rgba(252, 238, 12, 0.05) 0%, transparent 70%);
+    border: 2px solid #fcee0c;
+    border-radius: 12px;
+    padding: 3rem;
+    position: relative;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 0 40px rgba(252, 238, 12, 0.3),
+        inset 0 0 40px rgba(252, 238, 12, 0.05);
+    animation: containerBreath 6s ease-in-out infinite;
+    margin-top: 2rem;
+}
+
+.welcome-container::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #fcee0c, #03d8f3, #fcee0c);
+    background-size: 200% 200%;
+    border-radius: 12px;
+    z-index: -1;
+    animation: borderFlow 4s linear infinite;
+    opacity: 0.8;
+}
+
+@keyframes containerBreath {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(252, 238, 12, 0.3); }
+    50% { transform: scale(1.005); box-shadow: 0 0 50px rgba(252, 238, 12, 0.4); }
+}
+
+@keyframes borderFlow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.welcome-message {
+    text-align: center;
+    color: #fcee0c;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.welcome-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 15px rgba(252, 238, 12, 0.6);
+    animation: welcomePulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes welcomePulse {
+    0% { opacity: 0.9; }
+    100% { opacity: 1; text-shadow: 0 0 20px rgba(252, 238, 12, 0.8); }
+}
+
+.user-greeting {
+    font-size: 1.5rem;
+    color: #03d8f3;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 10px rgba(3, 216, 243, 0.5);
+}
+
+.user-name {
+    color: #fcee0c;
+    font-weight: 700;
+    text-shadow: 0 0 15px rgba(252, 238, 12, 0.8);
+    animation: nameGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes nameGlow {
+    0% { text-shadow: 0 0 10px rgba(252, 238, 12, 0.6); }
+    100% { text-shadow: 0 0 20px rgba(252, 238, 12, 0.9); }
+}
+
+.info-section {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(3, 216, 243, 0.3);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-top: 2rem;
+    text-align: center;
+    backdrop-filter: blur(5px);
+    box-shadow: 
+        0 0 20px rgba(3, 216, 243, 0.2),
+        inset 0 0 20px rgba(3, 216, 243, 0.1);
+}
+
+.info-text {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #fcee0c;
+    margin-bottom: 0;
+    opacity: 0.9;
+}
+
+.gaming-icon {
+    font-size: 3rem;
+    color: #03d8f3;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 20px rgba(3, 216, 243, 0.6);
+    animation: iconFloat 3s ease-in-out infinite alternate;
+}
+
+@keyframes iconFloat {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-5px); }
+}
+
+.cyber-divider {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #fcee0c, #03d8f3, #fcee0c, transparent);
+    margin: 2rem 0;
+    animation: dividerGlow 4s ease-in-out infinite alternate;
+    opacity: 0.7;
+}
+
+@keyframes dividerGlow {
+    0% { box-shadow: 0 0 5px rgba(252, 238, 12, 0.5); }
+    100% { box-shadow: 0 0 15px rgba(3, 216, 243, 0.8); }
+}
+
+.scan-line {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(252, 238, 12, 0.8), transparent);
+    animation: scanMove 8s linear infinite;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+@keyframes scanMove {
+    0% { top: -1px; opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { top: 100vh; opacity: 0; }
+}
+
+@media (max-width: 768px) {
+    .gaming-title {
+        font-size: 2.5rem;
+    }
+    
+    .welcome-title {
+        font-size: 2rem;
+    }
+    
+    .user-greeting {
+        font-size: 1.2rem;
+    }
+    
+    .welcome-container {
+        padding: 2rem;
+        margin: 1rem;
+    }
+    
+    .info-text {
+        font-size: 1rem;
+    }
+}
+
+.glitch-effect {
+    position: relative;
+    display: inline-block;
+}
+
+.glitch-effect::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: rgba(255, 0, 0, 0.7);
+    z-index: -1;
+    animation: glitch1 0.3s infinite;
+}
+
+.glitch-effect::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: rgba(0, 255, 255, 0.7);
+    z-index: -2;
+    animation: glitch2 0.3s infinite;
+}
+
+@keyframes glitch1 {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-1px, 1px); }
+    40% { transform: translate(-1px, -1px); }
+    60% { transform: translate(1px, 1px); }
+    80% { transform: translate(1px, -1px); }
+}
+
+@keyframes glitch2 {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(1px, 1px); }
+    40% { transform: translate(1px, -1px); }
+    60% { transform: translate(-1px, 1px); }
+    80% { transform: translate(-1px, -1px); }
+}
+</style>
+</head>
+<body>
+<div class="scan-line"></div>
+
+<div th:replace="~{fragments/fragments :: navbar}"></div>
+
+<div class="container mt-4">
+    <div class="gaming-title">
+        ReptilGaming 🦎🎮
+    </div>
+    
+    <div class="welcome-container">
+        <div class="welcome-message">
+            <div class="gaming-icon">
+                <i class="fas fa-gamepad"></i>
+            </div>
+            
+            <h1 class="welcome-title glitch-effect" data-text="¡Sistema Activado!">
+                ¡Sistema Activado!
+            </h1>
+            
+            <div class="user-greeting">
+                Jugador conectado: <span class="user-name" th:text="${session.nombreCompleto}">Usuario</span>
+            </div>
+            
+            <hr class="cyber-divider">
+            
+            <div class="info-section">
+                <p class="info-text">
+                    <i class="fas fa-shield-alt" style="color: #03d8f3; margin-right: 0.5rem;"></i>
+                    Acceso autorizado al sistema ReptilGaming
+                    <br><br>
+                    <i class="fas fa-database" style="color: #fcee0c; margin-right: 0.5rem;"></i>
+                    Todas las operaciones son monitoreadas y registradas
+                    <br><br>
+                    <i class="fas fa-rocket" style="color: #03d8f3; margin-right: 0.5rem;"></i>
+                    Utiliza el panel de navegación para explorar el sistema
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+window.addEventListener('load', function() {
+    const glitchElements = document.querySelectorAll('.glitch-effect');
+    
+    glitchElements.forEach(element => {
+        setTimeout(() => {
+            element.style.animation = 'none';
+            setTimeout(() => {
+                element.style.animation = '';
+            }, 100);
+        }, 2000);
+    });
+});
+
+
+setInterval(() => {
+    if (Math.random() < 0.05) {
+        document.body.style.filter = 'contrast(' + (1 + Math.random() * 0.05) + ')';
+        setTimeout(() => {
+            document.body.style.filter = 'none';
+        }, 100);
+    }
+}, 8000);
+
+function typeWriter(element, text, speed = 50) {
+    let i = 0;
+    element.innerHTML = '';
+    
+    function type() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+        }
+    }
+    
+    type();
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const userName = document.querySelector('.user-name');
+    if (userName) {
+        const originalText = userName.textContent;
+        typeWriter(userName, originalText, 100);
+    }
+});
+</script>
+</body>
+</html>

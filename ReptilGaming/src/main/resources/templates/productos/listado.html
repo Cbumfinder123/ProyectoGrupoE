@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de Productos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<style>
+					.btn-action {
+					    width: 60px;
+					    height: 60px;
+					    flex-direction: column;
+					    font-size: 0.8rem;
+					    text-align: center;
+					    padding: 5px;
+					}
+
+			        
+			        .btn-action:hover {
+			            transform: translateY(-3px);
+			            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+			        }
+			        
+			        .btn-edit {
+			            background-color: #ffc107;
+			            border-color: #ffc107;
+			        }
+			        
+			        .btn-detail {
+			            background-color: #17a2b8;
+			            border-color: #17a2b8;
+			        }
+			        
+			        .btn-delete {
+			            background-color: #dc3545;
+			            border-color: #dc3545;
+			        }
+			        
+			        .btn-add {
+			            background: linear-gradient(135deg, #28a745, #20c997);
+			            border: none;
+			            transition: all 0.3s ease;
+			        }
+			        
+			        .btn-add:hover {
+			            transform: scale(1.05);
+			            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+			        }
+			        
+			        .search-container {
+			            background: linear-gradient(to right, #e3f2fd, #bbdefb);
+			            border-radius: 10px;
+			            padding: 20px;
+			            margin-bottom: 25px;
+			            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+			        }
+			        
+			        .table-container {
+			            border-radius: 10px;
+			            overflow: hidden;
+			            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+			        }
+			        
+			        .header-gradient {
+			            background: linear-gradient(135deg, #1a237e, #283593);
+			        }
+			        
+			        .table-hover tbody tr:hover {
+			            background-color: rgba(33, 150, 243, 0.05);
+			            transform: scale(1.005);
+			            transition: all 0.2s ease;
+			        }
+			        
+			        .action-label {
+			            font-size: 0.8rem;
+			            margin-top: 3px;
+			            opacity: 0.8;
+			        }
+			        
+			        .stock-indicator {
+			            display: inline-block;
+			            width: 12px;
+			            height: 12px;
+			            border-radius: 50%;
+			            margin-right: 5px;
+			        }
+			        
+			        .stock-low {
+			            background-color: #dc3545;
+			            animation: pulse 1.5s infinite;
+			        }
+			        
+			        .stock-medium {
+			            background-color: #ffc107;
+			        }
+			        
+			        .stock-high {
+			            background-color: #28a745;
+			        }
+			        
+			        @keyframes pulse {
+			            0% { opacity: 0.7; }
+			            50% { opacity: 1; }
+			            100% { opacity: 0.7; }
+			        }
+					.btn-filtro {
+							    background-color: #6c757d;
+							    color: white;
+							    transition: all 0.3s ease;
+							    border: none;
+							    padding: 10px 15px;
+							    border-radius: 6px;
+							    font-size: 0.9rem;
+							    display: inline-flex;
+							    align-items: center;
+							    gap: 5px;
+							}
+							
+							.btn-filtro:hover {
+							    background-color: #5a6268;
+							    transform: translateY(-2px);
+							    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+							}
+							
+							.btn-filtro.active {
+							    background-color: #0d6efd;
+							}
+							
+							.filtros-container {
+							    display: flex;
+							    justify-content: flex-end;
+							    gap: 10px;
+							    margin-bottom: 15px;
+							    padding: 10px;
+							    background-color: #f8f9fa;
+							    border-radius: 8px;
+							}
+							
+							.arrow-icon {
+							    transition: transform 0.3s ease;
+							}
+							
+							.fa-sort-amount-up-alt {
+							    transform: rotate(180deg);
+							}
+			    </style>
+ 
+</head>
+<body>
+	<div th:replace="~{fragments/fragments :: navbar}"></div>
+    <div class="container mt-4 mb-5">
+        <div class="card shadow-lg">
+            <div class="card-header text-white header-gradient">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2 class="m-0"><i class="fas fa-boxes me-2"></i>Listado de Productos</h2>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <a th:href="@{/productos/nuevo}" class="btn btn-add text-white">
+                            <i class="fas fa-plus-circle me-2"></i>Nuevo Producto
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <!-- Buscador mejorado -->
+                <div class="search-container">
+                    <form th:action="@{/productos/listado}" method="get">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white">
+                                <i class="fas fa-search text-primary"></i>
+                            </span>
+                            <input type="text" 
+                                   name="query" 
+                                   class="form-control form-control-lg" 
+                                   placeholder="Buscar por código, nombre, categoría, proveedor o plataforma..."
+                                   th:value="${param.query != null} ? ${param.query} : ''">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                Buscar <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Nuevos botones de filtrado con alternancia -->
+                <div class="filtros-container">
+                    <!-- Botón para stock con alternancia -->
+                    <a th:href="@{/productos/listado(ordenStock=${ordenStock == 'asc' ? 'desc' : 'asc'})}" 
+                       th:classappend="${ordenStock != null} ? 'btn-filtro active' : 'btn-filtro'">
+                        <i class="fas fa-box"></i> Stock
+                        <i class="fas arrow-icon ms-1" 
+                           th:classappend="${ordenStock == 'asc'} ? 'fa-sort-amount-up' : 'fa-sort-amount-up-alt'"></i>
+                    </a>
+                    
+                    <!-- Botón para precio con alternancia -->
+                    <a th:href="@{/productos/listado(ordenPrecio=${ordenPrecio == 'asc' ? 'desc' : 'asc'})}" 
+                       th:classappend="${ordenPrecio != null} ? 'btn-filtro active' : 'btn-filtro'">
+                        <i class="fas fa-tag"></i> Precio
+                        <i class="fas arrow-icon ms-1" 
+                           th:classappend="${ordenPrecio == 'asc'} ? 'fa-sort-amount-up' : 'fa-sort-amount-up-alt'"></i>
+                    </a>
+                    
+                    <!-- Botón para quitar todos los filtros -->
+                    <a th:href="@{/productos/listado}" 
+                       th:classappend="${ordenStock == null and ordenPrecio == null} ? 'btn-filtro active' : 'btn-filtro'">
+                        <i class="fas fa-times"></i> Quitar Filtros
+                    </a>
+                </div>
+                
+                <!-- Tabla de productos -->
+                <div class="table-responsive table-container">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th><i class="fas fa-barcode me-2"></i>Código</th>
+                                <th><i class="fas fa-tag me-2"></i>Nombre</th>
+                                <th><i class="fas fa-layer-group me-2"></i>Categoría</th>
+                                <th><i class="fas fa-truck me-2"></i>Proveedor</th>
+                                <th><i class="fas fa-gamepad me-2"></i>Plataforma</th>
+                                <th class="text-end"><i class="fas fa-boxes me-2"></i>Stock</th>
+                                <th class="text-end"><i class="fas fa-money-bill-wave me-2"></i>Precio (S/.)</th>
+                                <th class="text-center"><i class="fas fa-cogs me-2"></i>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="p : ${productos}">
+                                <td th:text="${p.codigo}"></td>
+                                <td>
+                                    <span th:text="${p.nombre}"></span>
+                                </td>
+                                <td th:text="${p.categoria.nombre}"></td>
+                                <td th:text="${p.proveedor.nombre}"></td>
+                                <td th:text="${p.plataforma.nombre}"></td>
+                                <td class="text-end">
+                                    <span th:class="${p.stock < 10 ? 'stock-indicator stock-low' : 
+                                                     (p.stock < 30 ? 'stock-indicator stock-medium' : 
+                                                     'stock-indicator stock-high')}"></span>
+                                    <span th:text="${p.stock}"></span>
+                                </td>
+                                <td class="text-end fw-bold text-success" 
+                                    th:text="${'S/ ' + #numbers.formatDecimal(p.precio, 1, 2, 'COMMA')}"></td>
+                                <td class="text-center">
+									<div class="d-flex justify-content-center gap-2 flex-wrap">
+									    <!-- Botón Editar -->
+									    <a th:href="@{/productos/editar/{id}(id=${p.id})}" 
+									       class="btn btn-action btn-edit text-white" title="Editar">
+									        <i class="fas fa-edit"></i><br><small class="action-label">Editar</small>
+									    </a>
+									    
+									    <!-- Botón Detalles -->
+									    <a th:href="@{/productos/detalle/{id}(id=${p.id})}" 
+									       class="btn btn-action btn-detail text-white" title="Detalles">
+									        <i class="fas fa-info-circle"></i><br><small class="action-label">Detalles</small>
+									    </a>
+									    
+									    <!-- Botón Eliminar -->
+									    <a th:href="@{/productos/eliminar/{id}(id=${p.id})}" 
+									       class="btn btn-action btn-delete text-white" title="Eliminar"
+									       onclick="return confirm('¿Estás seguro de eliminar este producto?');">
+									        <i class="fas fa-trash-alt"></i><br><small class="action-label">Eliminar</small>
+									    </a>
+									</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>ReptilGPT</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: 
+        radial-gradient(ellipse at top, #0a0a23 0%, #000000 70%),
+        linear-gradient(135deg, #000000 0%, #0d1b2a 25%, #1b263b 50%, #000000 75%, #0a0a23 100%);
+    font-family: 'JetBrains Mono', monospace;
+    color: #fcee0c;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Subtle grid background */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(90deg, transparent 98%, rgba(252, 238, 12, 0.05) 100%),
+        linear-gradient(0deg, transparent 98%, rgba(252, 238, 12, 0.05) 100%);
+    background-size: 80px 80px;
+    animation: gridMove 30s linear infinite;
+    z-index: -2;
+}
+
+@keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(80px, 80px); }
+}
+
+/* Ambient glow effect */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 15% 30%, rgba(252, 238, 12, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 70%, rgba(3, 216, 243, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 50% 20%, rgba(255, 17, 17, 0.04) 0%, transparent 50%);
+    animation: ambientPulse 20s ease-in-out infinite alternate;
+    z-index: -1;
+}
+
+@keyframes ambientPulse {
+    0% { opacity: 0.4; }
+    100% { opacity: 0.8; }
+}
+
+.container {
+    position: relative;
+    z-index: 10;
+}
+
+ 
+.cyber-title {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 3.5rem;
+    color: #fcee0c;
+    text-shadow: 
+        0 0 20px rgba(252, 238, 12, 0.8),
+        0 0 40px rgba(252, 238, 12, 0.6),
+        0 0 60px rgba(252, 238, 12, 0.4);
+    position: relative;
+    margin-bottom: 2rem;
+    animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+.cyber-title::before {
+    content: 'ReptilGPT 🦎';
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: rgba(3, 216, 243, 0.3);
+    transform: translate(1px, 1px);
+    z-index: -1;
+    animation: glitchShift 4s infinite;
+}
+
+@keyframes titleGlow {
+    0% { text-shadow: 0 0 20px rgba(252, 238, 12, 0.8), 0 0 40px rgba(252, 238, 12, 0.6); }
+    100% { text-shadow: 0 0 30px rgba(252, 238, 12, 1), 0 0 60px rgba(252, 238, 12, 0.8); }
+}
+
+@keyframes glitchShift {
+    0%, 90%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-1px, 1px); }
+    20% { transform: translate(1px, -1px); }
+}
+
+
+.cyber-container {
+    background: 
+        linear-gradient(135deg, rgba(13, 27, 42, 0.95) 0%, rgba(0, 0, 0, 0.95) 100%),
+        radial-gradient(circle at 50% 50%, rgba(252, 238, 12, 0.05) 0%, transparent 70%);
+    border: 1px solid #fcee0c;
+    border-radius: 8px;
+    padding: 2.5rem;
+    position: relative;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 0 30px rgba(252, 238, 12, 0.2),
+        inset 0 0 30px rgba(252, 238, 12, 0.05);
+    animation: containerBreath 6s ease-in-out infinite;
+}
+
+.cyber-container::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    background: linear-gradient(45deg, #fcee0c, #03d8f3, #fcee0c);
+    background-size: 200% 200%;
+    border-radius: 8px;
+    z-index: -1;
+    animation: borderFlow 4s linear infinite;
+    opacity: 0.8;
+}
+
+@keyframes containerBreath {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(252, 238, 12, 0.2); }
+    50% { transform: scale(1.005); box-shadow: 0 0 40px rgba(252, 238, 12, 0.3); }
+}
+
+@keyframes borderFlow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+
+.form-label {
+    color: #fcee0c;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-shadow: 0 0 10px rgba(252, 238, 12, 0.5);
+    margin-bottom: 1rem;
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.cyber-textarea {
+    background: rgba(0, 0, 0, 0.8) !important;
+    border: 2px solid #136377 !important;
+    border-radius: 6px !important;
+    color: #fcee0c !important;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    padding: 1.2rem !important;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 0 20px rgba(19, 99, 119, 0.3),
+        inset 0 0 20px rgba(0, 0, 0, 0.5);
+    line-height: 1.6;
+}
+
+.cyber-textarea:focus {
+    border-color: #03d8f3 !important;
+    box-shadow: 
+        0 0 30px rgba(3, 216, 243, 0.5),
+        inset 0 0 30px rgba(3, 216, 243, 0.1) !important;
+    background: rgba(3, 216, 243, 0.05) !important;
+    outline: none !important;
+    color: #ffffff !important;
+}
+
+.cyber-textarea::placeholder {
+    color: rgba(252, 238, 12, 0.6) !important;
+    font-style: italic;
+}
+
+
+.cyber-btn {
+    background: linear-gradient(135deg, #136377 0%, #0a4d5c 100%);
+    border: 2px solid #03d8f3;
+    color: #fcee0c;
+    font-family: 'Orbitron', monospace;
+    font-weight: 600;
+    padding: 14px 32px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 0 20px rgba(3, 216, 243, 0.3),
+        inset 0 0 20px rgba(3, 216, 243, 0.1);
+    font-size: 0.9rem;
+}
+
+.cyber-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(252, 238, 12, 0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.cyber-btn:hover::before {
+    left: 100%;
+}
+
+.cyber-btn:hover {
+    background: linear-gradient(135deg, #03d8f3 0%, #136377 100%);
+    border-color: #fcee0c;
+    color: #000000;
+    box-shadow: 
+        0 0 30px rgba(252, 238, 12, 0.5),
+        inset 0 0 30px rgba(252, 238, 12, 0.2);
+    transform: translateY(-2px);
+}
+
+.cyber-btn:active {
+    transform: translateY(0);
+}
+
+
+.cyber-btn-secondary {
+    background: linear-gradient(135deg, #1b263b 0%, #0d1b2a 100%);
+    border: 2px solid #fcee0c;
+    color: #fcee0c;
+    box-shadow: 
+        0 0 20px rgba(252, 238, 12, 0.2),
+        inset 0 0 20px rgba(252, 238, 12, 0.05);
+}
+
+.cyber-btn-secondary:hover {
+    background: linear-gradient(135deg, #fcee0c 0%, #d8bc66 100%);
+    border-color: #03d8f3;
+    color: #000000;
+    box-shadow: 
+        0 0 30px rgba(252, 238, 12, 0.5),
+        inset 0 0 30px rgba(252, 238, 12, 0.2);
+}
+
+
+.response-container {
+    background: 
+        linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(13, 27, 42, 0.9) 100%);
+    border: 2px solid #03d8f3;
+    border-radius: 6px;
+    padding: 2rem;
+    margin-top: 2rem;
+    position: relative;
+    min-height: 200px;
+    box-shadow: 
+        0 0 25px rgba(3, 216, 243, 0.3),
+        inset 0 0 25px rgba(3, 216, 243, 0.1);
+}
+
+.response-container::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #03d8f3, #136377, #03d8f3);
+    background-size: 300% 300%;
+    border-radius: 6px;
+    z-index: -1;
+    animation: responseGlow 3s linear infinite;
+    opacity: 0.7;
+}
+
+@keyframes responseGlow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.response-title {
+    color: #03d8f3;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 15px rgba(3, 216, 243, 0.6);
+    border-bottom: 1px solid rgba(3, 216, 243, 0.3);
+    padding-bottom: 0.5rem;
+}
+
+#respuesta {
+    background: transparent !important;
+    border: none !important;
+    color: #fcee0c !important;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    line-height: 1.7;
+    padding: 0 !important;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    text-shadow: 0 0 5px rgba(252, 238, 12, 0.3);
+}
+
+
+.loading {
+    position: relative;
+    color: #03d8f3;
+    animation: loadingPulse 1.5s ease-in-out infinite;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.loading::after {
+    content: '';
+    animation: loadingDots 2s infinite;
+}
+
+@keyframes loadingPulse {
+    0%, 100% { opacity: 1; text-shadow: 0 0 10px rgba(3, 216, 243, 0.5); }
+    50% { opacity: 0.6; text-shadow: 0 0 20px rgba(3, 216, 243, 0.8); }
+}
+
+@keyframes loadingDots {
+    0%, 20% { content: '[PROCESANDO]'; }
+    40% { content: '[PROCESANDO.]'; }
+    60% { content: '[PROCESANDO..]'; }
+    80%, 100% { content: '[PROCESANDO...]'; }
+}
+
+
+.cyber-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #fcee0c, #03d8f3, #fcee0c, transparent);
+    margin: 2.5rem 0;
+    animation: dividerGlow 4s ease-in-out infinite alternate;
+    opacity: 0.7;
+}
+
+@keyframes dividerGlow {
+    0% { box-shadow: 0 0 5px rgba(252, 238, 12, 0.5); }
+    100% { box-shadow: 0 0 15px rgba(3, 216, 243, 0.8); }
+}
+
+
+.cyber-icon {
+    display: inline-block;
+    margin-right: 10px;
+    color: #03d8f3;
+    text-shadow: 0 0 10px rgba(3, 216, 243, 0.5);
+}
+
+
+@media (max-width: 768px) {
+    .cyber-title {
+        font-size: 2.5rem;
+    }
+    
+    .cyber-container {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+    
+    .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .cyber-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+
+.cursor-blink {
+    animation: cursorBlink 1s infinite;
+}
+
+@keyframes cursorBlink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+
+.scan-line {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(252, 238, 12, 0.8), transparent);
+    animation: scanMove 8s linear infinite;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+@keyframes scanMove {
+    0% { top: -1px; opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { top: 100vh; opacity: 0; }
+}
+
+
+.error-state {
+    color: #ff1111 !important;
+    text-shadow: 0 0 10px rgba(255, 17, 17, 0.5) !important;
+    animation: errorPulse 0.5s ease-in-out 3;
+}
+
+@keyframes errorPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+</style>
+</head>
+<body class="bg-light">
+<div class="scan-line"></div>
+<div th:replace="~{fragments/fragments :: navbar}"></div>
+<div class="container mt-5">
+    <h2 class="cyber-title text-center">ReptilGPT 🦎</h2>
+    
+    <div class="cyber-container">
+        <div class="mb-4">
+            <label for="pregunta" class="form-label">
+                <i class="fas fa-terminal cyber-icon"></i>
+                &gt; ¿Sobre qué parte del sistema tenés dudas?
+            </label>
+            <textarea id="pregunta" class="form-control cyber-textarea" rows="4" 
+                placeholder="Ejemplo: ¿Cómo se calcula el total de una venta? [ENTER para nueva línea]"></textarea>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+            <a th:href="@{/}" class="cyber-btn cyber-btn-secondary text-decoration-none">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+            <button class="cyber-btn" onclick="enviar()">
+                <i class="fas fa-paper-plane"></i> Ejecutar
+            </button>
+        </div>
+
+        <hr class="cyber-divider">
+
+        <div class="response-container">
+            <h5 class="response-title">
+                <i class="fas fa-robot cyber-icon"></i>
+                &gt; Sistema ReptilGPT_
+            </h5>
+            <pre id="respuesta">Esperando comando...<span class="cursor-blink">_</span></pre>
+        </div>
+    </div>
+</div>
+
+<script>
+function enviar() {
+    const pregunta = document.getElementById('pregunta').value;
+    if (!pregunta.trim()) {
+        const textarea = document.getElementById('pregunta');
+        textarea.style.borderColor = '#ff1111';
+        textarea.style.boxShadow = '0 0 30px rgba(255, 17, 17, 0.5)';
+        
+    
+        const respuestaElement = document.getElementById('respuesta');
+        respuestaElement.className = 'error-state';
+        respuestaElement.innerHTML = 'ERROR: Comando vacío detectado.\nPor favor, ingresa una consulta válida._';
+        
+        setTimeout(() => {
+            textarea.style.borderColor = '#136377';
+            textarea.style.boxShadow = '0 0 20px rgba(19, 99, 119, 0.3)';
+            respuestaElement.className = '';
+            respuestaElement.innerHTML = 'Esperando comando...<span class="cursor-blink">_</span>';
+        }, 3000);
+        return;
+    }
+    
+    const respuestaElement = document.getElementById('respuesta');
+    respuestaElement.className = 'loading';
+    respuestaElement.textContent = '';
+
+    fetch('/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'text/plain'},
+        body: pregunta
+    })
+    .then(r => r.text())
+    .then(respuesta => {
+        respuestaElement.className = '';
+        respuestaElement.innerHTML = respuesta + '<span class="cursor-blink">_</span>';
+    })
+    .catch(() => {
+        respuestaElement.className = 'error-state';
+        respuestaElement.innerHTML = 'FALLO_CRÍTICO: Conexión perdida con el servidor.\nReintentando en 3 segundos..._';
+        setTimeout(() => {
+            respuestaElement.className = '';
+            respuestaElement.innerHTML = 'Esperando comando...<span class="cursor-blink">_</span>';
+        }, 3000);
+    });
+}
+
+
+document.getElementById('pregunta').addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'Enter') {
+        enviar();
+    }
+});
+
+
+let typewriterTimeout;
+document.getElementById('pregunta').addEventListener('input', function() {
+    clearTimeout(typewriterTimeout);
+    typewriterTimeout = setTimeout(() => {
+   
+        this.style.textShadow = '0 0 5px rgba(252, 238, 12, 0.3)';
+        setTimeout(() => {
+            this.style.textShadow = 'none';
+        }, 200);
+    }, 100);
+});
+
+
+setInterval(() => {
+    if (Math.random() < 0.05) {
+        document.body.style.filter = 'contrast(' + (1 + Math.random() * 0.05) + ')';
+        setTimeout(() => {
+            document.body.style.filter = 'none';
+        }, 100);
+    }
+}, 8000);
+</script>
+</body>
+</html>

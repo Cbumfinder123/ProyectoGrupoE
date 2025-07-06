@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Venta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .stock-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        .stock-low { background-color: #dc3545; }
+        .stock-medium { background-color: #ffc107; }
+        .stock-high { background-color: #28a745; }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/fragments :: navbar}"></div>
+    <div class="container mt-4">
+        <div th:if="${alert}" th:utext="${alert}"></div>
+
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h2 class="m-0"><i class="fas fa-cash-register me-2"></i>Registrar Nueva Venta</h2>
+            </div>
+            
+            <div class="card-body">
+                <form th:action="@{/ventas/guardar}" method="post" th:object="${venta}">
+                    <div class="row mb-4 border-bottom pb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">DNI</label>
+                            <input type="text" class="form-control" 
+                                   th:field="*{cliente.dni}" 
+                                   id="dniInput"
+                                   maxlength="8"
+                                   required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Nombre del Cliente</label>
+                            <input type="text" class="form-control" 
+                                   th:field="*{cliente.nombre}" 
+                                   id="nombreInput"
+                                   required>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold">Seleccionar Producto</label>
+                            <div class="input-group">
+                                <select class="form-select" id="selectProducto">
+                                    <option value="">-- Seleccione un producto --</option>
+                                    <option th:each="p : ${productos}" 
+                                            th:value="${p.id}" 
+                                            th:data-precio="${p.precio}"
+                                            th:data-stock="${p.stock}"
+                                            th:text="${p.nombre + ' (S/ ' + #numbers.formatDecimal(p.precio,1,2,'COMMA') + ')'}">
+                                    </option>
+                                </select>
+                                <input type="number" id="cantidadProducto" class="form-control" 
+                                       placeholder="Cantidad" min="1" value="1">
+                                <button type="button" class="btn btn-primary" 
+                                        onclick="agregarProducto()">
+                                    <i class="fas fa-plus"></i> Agregar
+                                </button>
+                            </div>
+                            <div class="mt-2">
+                                <span id="stockInfo" class="fst-italic text-muted"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="mb-3">Productos Seleccionados</h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th class="text-end">Precio Unitario</th>
+                                            <th class="text-end">Cantidad</th>
+                                            <th class="text-end">Subtotal</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="detallesBody">
+                                        <tr th:if="${#lists.isEmpty(venta.detalles)}">
+                                            <td colspan="5" class="text-center text-muted">
+                                                No hay productos agregados
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot class="table-light">
+                                        <tr>
+                                            <td colspan="3" class="text-end fw-bold">TOTAL:</td>
+                                            <td colspan="2" class="fw-bold text-success" 
+                                                id="totalVenta">S/ 0.00</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end gap-2">
+                        <a th:href="@{/ventas/listado}" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check-circle me-1"></i> Registrar Venta
+                        </button>
+                    </div>
+                    
+                    <input type="hidden" id="detallesJson" name="detallesJson">
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    let detallesVenta = [];
+    
+    
+    document.getElementById('selectProducto').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const stock = selectedOption.getAttribute('data-stock') || 0;
+        const stockInfo = document.getElementById('stockInfo');
+        
+        if (stock > 0) {
+            stockInfo.textContent = `Stock disponible: ${stock} unidades`;
+            stockInfo.className = 'text-success fst-italic';
+        } else if (this.value) {
+            stockInfo.textContent = 'Producto sin stock disponible';
+            stockInfo.className = 'text-danger fst-italic';
+        } else {
+            stockInfo.textContent = '';
+        }
+    });
+
+    function agregarProducto() {
+        const select = document.getElementById('selectProducto');
+        const cantidadInput = document.getElementById('cantidadProducto');
+        const productoId = select.value;
+        const productoNombre = select.options[select.selectedIndex].text.split(' (')[0];
+        const precio = parseFloat(select.options[select.selectedIndex].getAttribute('data-precio'));
+        const stock = parseInt(select.options[select.selectedIndex].getAttribute('data-stock'));
+        const cantidad = parseInt(cantidadInput.value);
+        
+        if (!productoId) {
+            Swal.fire('Error', 'Seleccione un producto', 'error');
+            return;
+        }
+        
+        if (isNaN(cantidad) || cantidad <= 0) {
+            Swal.fire('Error', 'Ingrese una cantidad válida', 'error');
+            return;
+        }
+        
+        if (cantidad > stock) {
+            Swal.fire('Stock insuficiente', `Solo hay ${stock} unidades disponibles`, 'warning');
+            return;
+        }
+        
+        const detalleExistenteIndex = detallesVenta.findIndex(d => d.productoId == productoId);
+        
+        if (detalleExistenteIndex !== -1) {
+            detallesVenta[detalleExistenteIndex].cantidad += cantidad;
+            
+            if (detallesVenta[detalleExistenteIndex].cantidad > stock) {
+                Swal.fire('Stock insuficiente', `No puedes agregar más de ${stock} unidades`, 'warning');
+                return;
+            }
+            
+            const row = document.getElementById(`detalle_${productoId}`);
+            row.querySelector('.cantidad').textContent = detallesVenta[detalleExistenteIndex].cantidad;
+            row.querySelector('.subtotal').textContent = `S/ ${(precio * detallesVenta[detalleExistenteIndex].cantidad).toFixed(2)}`;
+        } else {
+           
+            const nuevoDetalle = {
+                productoId: productoId,
+                nombre: productoNombre,
+                precio: precio,
+                cantidad: cantidad,
+                stock: stock
+            };
+            
+            detallesVenta.push(nuevoDetalle);
+            
+            const detallesBody = document.getElementById('detallesBody');
+
+            const emptyRow = detallesBody.querySelector('tr[th\\:if]');
+            if (emptyRow) emptyRow.remove();
+            
+            const row = document.createElement('tr');
+            row.id = `detalle_${productoId}`;
+            row.innerHTML = `
+                <td>${productoNombre}</td>
+                <td class="text-end">S/ ${precio.toFixed(2)}</td>
+                <td class="text-end cantidad">${cantidad}</td>
+                <td class="text-end subtotal">S/ ${(precio * cantidad).toFixed(2)}</td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-danger"
+                            onclick="eliminarProducto('${productoId}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            detallesBody.appendChild(row);
+        }
+        
+        actualizarTotal();
+        
+        select.value = '';
+        cantidadInput.value = 1;
+        document.getElementById('stockInfo').textContent = '';
+    }
+    
+    function actualizarTotal() {
+        let total = 0;
+        document.querySelectorAll('.subtotal').forEach(el => {
+            total += parseFloat(el.textContent.replace('S/ ', ''));
+        });
+        document.getElementById('totalVenta').textContent = `S/ ${total.toFixed(2)}`;
+        
+        document.getElementById('detallesJson').value = JSON.stringify(detallesVenta);
+    }
+    
+    function eliminarProducto(productoId) {
+
+        detallesVenta = detallesVenta.filter(d => d.productoId != productoId);
+        
+        const row = document.getElementById(`detalle_${productoId}`);
+        if (row) row.remove();
+        
+        actualizarTotal();
+        
+        if (detallesVenta.length === 0) {
+            const detallesBody = document.getElementById('detallesBody');
+            detallesBody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center text-muted">
+                        No hay productos agregados
+                    </td>
+                </tr>
+            `;
+        }
+    }
+    
+    document.querySelector('form').addEventListener('submit', function() {
+        document.getElementById('detallesJson').value = JSON.stringify(detallesVenta);
+    });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const dniInput = document.getElementById('dniInput');
+        const nombreInput = document.getElementById('nombreInput');
+        
+        dniInput.addEventListener('blur', function() {
+            const dni = dniInput.value.trim();
+            if(dni.length !== 8) return;
+            
+            fetch(`/ventas/buscarCliente?dni=${dni}`)
+                .then(response => {
+                    if(response.ok) return response.json();
+                    throw new Error('Cliente no encontrado');
+                })
+                .then(cliente => {
+                    nombreInput.value = cliente.nombre;
+                    nombreInput.readOnly = true;
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cliente existente',
+                        text: 'Nombre cargado automáticamente',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                })
+                .catch(() => {
+                    nombreInput.value = '';
+                    nombreInput.readOnly = false;
+                    nombreInput.focus();
+                    
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Nuevo cliente',
+                        text: 'Complete los datos del cliente',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                });
+        });
+        
+        dniInput.addEventListener('input', function() {
+            nombreInput.readOnly = false;
+        });
+    });
+    </script>
+</body>
+</html>

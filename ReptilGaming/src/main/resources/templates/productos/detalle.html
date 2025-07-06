@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalles del Producto</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+	<div th:replace="~{fragments/fragments :: navbar}"></div>
+    <div class="container mt-4">
+        <div class="card shadow-lg">
+            <div class="card-header bg-info text-white">
+                <h2 class="m-0">Detalles del Producto: <span th:text="${producto.nombre}"></span></h2>
+            </div>
+            
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h3 th:text="${producto.nombre}"></h3>
+                    
+                        <div class="mt-3">
+                            <h5>Descripción:</h5>
+                            <p class="text-muted" th:text="${producto.descripcion} ?: 'Sin descripción disponible'"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <span class="badge bg-primary fs-5" th:text="${producto.codigo}"></span>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h4 class="m-0">Información Básica</h4>
+                            </div>
+                            <div class="card-body">
+                                <dl class="row">
+                                    <dt class="col-sm-4">Categoría:</dt>
+                                    <dd class="col-sm-8" th:text="${producto.categoria.nombre}"></dd>
+                                    
+                                    <dt class="col-sm-4">Proveedor:</dt>
+                                    <dd class="col-sm-8" th:text="${producto.proveedor.nombre}"></dd>
+                                    
+                                    <dt class="col-sm-4">Plataforma:</dt>
+                                    <dd class="col-sm-8" th:text="${producto.plataforma.nombre}"></dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h4 class="m-0">Inventario y Precio</h4>
+                            </div>
+                            <div class="card-body">
+                                <dl class="row">
+                                    <dt class="col-sm-4">Stock Actual:</dt>
+                                    <dd class="col-sm-8" th:text="${producto.stock}"></dd>
+                                    
+                                    <dt class="col-sm-4">Precio Unitario:</dt>
+                                    <dd class="col-sm-8" th:text="${'S/ ' + #numbers.formatDecimal(producto.precio, 1, 2, 'COMMA')}"></dd>
+                                    
+                                    <dt class="col-sm-4">Valor Total:</dt>
+                                    <dd class="col-sm-8" th:text="${'S/ ' + #numbers.formatDecimal(producto.stock * producto.precio, 1, 2, 'COMMA')}"></dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-end mt-4">
+                    <a th:href="@{/productos/listado}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left"></i> Volver al Listado
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
